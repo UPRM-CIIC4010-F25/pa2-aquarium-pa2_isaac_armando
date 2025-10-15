@@ -8,6 +8,13 @@ void ofApp::setup(){
     backgroundImage.load("background.png");
     backgroundImage.resize(ofGetWindowWidth(), ofGetWindowHeight());
 
+        if (!music.load("Museum_Fish.mp3")) {                   //Music implementation
+        ofLogError() << "Failed to load Museum_Fish.mp3!"; 
+    } else {
+        music.setLoop(true);
+        music.play();
+    }
+
 
     std::shared_ptr<Aquarium> myAquarium;
     std::shared_ptr<PlayerCreature> player;
