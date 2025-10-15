@@ -8,7 +8,7 @@ void ofApp::setup(){
     backgroundImage.load("background.png");
     backgroundImage.resize(ofGetWindowWidth(), ofGetWindowHeight());
 
-        if (!music.load("Museum_Fish.mp3")) {                   //Music implementation
+        if (!music.load("Museum_Fish.mp3")) {                   //First Music implementation
         ofLogError() << "Failed to load Museum_Fish.mp3!"; 
     } else {
         music.setLoop(true);
