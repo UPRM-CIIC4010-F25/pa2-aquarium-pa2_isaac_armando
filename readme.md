@@ -25,7 +25,7 @@ Grading
 | Student Number | Student Name | Student Email |
 |-|-|-|
 |(802-24-7649)| (Isaac Montalvo Areizaga)| (isaac.montalvo@upr.edu) |
-|(STUDENT NUMBER HERE)| (STUDENT NAME HERE)| (STUDENT EMAIL HERE) |
+|(802-23-8684)| (Armando Moreno Pérez)| (armando.moreno1@upr.edu) |
 
 ---
 

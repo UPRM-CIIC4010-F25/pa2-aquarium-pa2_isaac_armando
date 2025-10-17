@@ -12,10 +12,23 @@ void Creature::normalize() {
 }
 
 void Creature::bounce() {
-    // should implement boundary controls here
+       if (m_x < 0) {
+        m_x = 0;
+        m_dx *= -1; 
+    }
+    else if (m_x > m_width - 70) { 
+        m_x = m_width - 70;
+        m_dx *= -1;
+    }
+    if (m_y < 0) {
+        m_y = 0;
+        m_dy *= -1;
+    }
+    else if (m_y > m_height - 70) {
+        m_y = m_height - 70;
+        m_dy *= -1;
+    }
 }
-
-
 void GameEvent::print() const {
         
         switch (type) {
