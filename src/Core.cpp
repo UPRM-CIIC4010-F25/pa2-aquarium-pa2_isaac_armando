@@ -1,5 +1,5 @@
 #include "Core.h"
-
+#include <math.h>
 
 // Creature Inherited Base Behavior
 void Creature::setBounds(int w, int h) { m_width = w; m_height = h; }
@@ -61,6 +61,14 @@ void GameEvent::print() const {
 
 // collision detection between two creatures
 bool checkCollision(std::shared_ptr<Creature> a, std::shared_ptr<Creature> b) {
+    float dx = pow((b->getX() - a->getX()), 2) ;       //Initial collision detection based on distance
+    float dy =  pow((b->getY() - a->getY()), 2) ;
+    float distance_fish = sqrt(dx + dy);
+    if (distance_fish <= a->getCollisionRadius() || distance_fish <= b->getCollisionRadius()) {
+        a->bounce();
+        b->bounce();
+        return true;
+    }
     return false; 
 };
 
