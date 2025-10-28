@@ -10,7 +10,8 @@
 enum class AquariumCreatureType {
     NPCreature,
     BiggerFish,
-    GreenFish
+    GreenFish,
+    TopFish
 };
 
 string AquariumCreatureTypeToString(AquariumCreatureType t);
@@ -101,6 +102,13 @@ public:
     void draw() const override;
 };
 
+class TopFish : public NPCreature {
+public:
+    TopFish(float x, float y, int speed, std::shared_ptr<GameSprite> sprite);
+    void move() override;
+    void draw() const override;
+};
+
 class AquariumSpriteManager {
     public:
         AquariumSpriteManager();
@@ -110,6 +118,7 @@ class AquariumSpriteManager {
         std::shared_ptr<GameSprite> m_npc_fish;
         std::shared_ptr<GameSprite> m_big_fish;
         std::shared_ptr<GameSprite> m_green_fish;
+        std::shared_ptr<GameSprite> m_top_fish;
 };
 
 
@@ -202,9 +211,21 @@ class Level_2 : public AquariumLevel  {
 class Level_3 : public AquariumLevel  {
     public:
         Level_3(int levelNumber, int targetScore): AquariumLevel(levelNumber, targetScore){
-            this->m_levelPopulation.push_back(std::make_shared<AquariumLevelPopulationNode>(AquariumCreatureType::NPCreature, 40));
+            this->m_levelPopulation.push_back(std::make_shared<AquariumLevelPopulationNode>(AquariumCreatureType::NPCreature, 20));
             this->m_levelPopulation.push_back(std::make_shared<AquariumLevelPopulationNode>(AquariumCreatureType::BiggerFish, 10));
             this->m_levelPopulation.push_back(std::make_shared<AquariumLevelPopulationNode>(AquariumCreatureType::GreenFish, 5));
+
+        };
+        std::vector<AquariumCreatureType> Repopulate() override;
+
+};
+
+class Level_4 : public AquariumLevel  {
+    public:
+        Level_4(int levelNumber, int targetScore): AquariumLevel(levelNumber, targetScore){
+            this->m_levelPopulation.push_back(std::make_shared<AquariumLevelPopulationNode>(AquariumCreatureType::BiggerFish, 15));
+            this->m_levelPopulation.push_back(std::make_shared<AquariumLevelPopulationNode>(AquariumCreatureType::GreenFish, 10));
+            this->m_levelPopulation.push_back(std::make_shared<AquariumLevelPopulationNode>(AquariumCreatureType::TopFish, 5));
 
         };
         std::vector<AquariumCreatureType> Repopulate() override;

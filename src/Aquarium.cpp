@@ -4,6 +4,10 @@
 
 string AquariumCreatureTypeToString(AquariumCreatureType t){
     switch(t){
+        case AquariumCreatureType::TopFish:
+            return "TopHatFish";
+        case AquariumCreatureType::GreenFish:
+            return "GreenFish";
         case AquariumCreatureType::BiggerFish:
             return "BiggerFish";
         case AquariumCreatureType::NPCreature:
@@ -142,18 +146,60 @@ NPCreature(x, y, speed, sprite) {
     m_value = 7; //  higher value than Bigger fish
     m_creatureType = AquariumCreatureType::GreenFish;
 }
-void GreenFish::move(){}
-void GreenFish::draw() const {}
+void GreenFish::move(){
+    m_x += m_dx * (m_speed * 1.4); // Moves at faster speed
+    m_y += m_dy * (m_speed * 1.4);
+    if(m_dx < 0 ){
+        this->m_sprite->setFlipped(true);
+    }else {
+        this->m_sprite->setFlipped(false);
+    }
+
+    bounce();}
+
+void GreenFish::draw() const { 
+    ofLogVerbose() << "GreenFish at (" << m_x << ", " << m_y << ") with speed " << m_speed << std::endl;
+    this->m_sprite->draw(this->m_x, this->m_y);
+}
+
+
+TopFish::TopFish(float x, float y, int speed, std::shared_ptr<GameSprite> sprite):
+NPCreature(x, y, speed, sprite) {
+    m_dx = (rand() % 3 - 1);
+    m_dy = (rand() % 3 - 1);
+    normalize();
+
+    setCollisionRadius(60); // Top fish will have a collision radius equal to BiggerFish
+    m_value = 10; // highest value
+    m_creatureType = AquariumCreatureType::TopFish;
+}
+void TopFish::move(){
+    m_x += m_dx * (m_speed ); // Moves at normal speed
+    m_y += m_dy * (m_speed );
+    if(m_dx < 0 ){
+        this->m_sprite->setFlipped(true);
+    }else {
+        this->m_sprite->setFlipped(false);
+    }
+
+    bounce();}
+void TopFish::draw() const { 
+    ofLogVerbose() << "TopFish at (" << m_x << ", " << m_y << ") with speed " << m_speed << std::endl;
+    this->m_sprite->draw(this->m_x, this->m_y);
+}
 
 // AquariumSpriteManager
 AquariumSpriteManager::AquariumSpriteManager(){
     this->m_npc_fish = std::make_shared<GameSprite>("base-fish.png", 70,70);
     this->m_big_fish = std::make_shared<GameSprite>("bigger-fish.png", 120, 120);
     this->m_green_fish = std::make_shared<GameSprite>("cust_green_fish.png", 100, 100);
+    this->m_top_fish = std::make_shared<GameSprite>("Top_fish.png", 120, 120);
 }
 
 std::shared_ptr<GameSprite> AquariumSpriteManager::GetSprite(AquariumCreatureType t){
     switch(t){
+        case AquariumCreatureType::TopFish:
+            return std::make_shared<GameSprite>(*this->m_top_fish);
         case AquariumCreatureType::GreenFish:
             return std::make_shared<GameSprite>(*this->m_green_fish);
         case AquariumCreatureType::BiggerFish:
@@ -238,6 +284,9 @@ void Aquarium::SpawnCreature(AquariumCreatureType type) {
         case AquariumCreatureType::GreenFish:
             this->addCreature(std::make_shared<GreenFish>(x, y, speed, this->m_sprite_manager->GetSprite(AquariumCreatureType::GreenFish)));
             break;
+        case AquariumCreatureType::TopFish:
+            this->addCreature(std::make_shared<TopFish>(x, y, speed, this->m_sprite_manager->GetSprite(AquariumCreatureType::TopFish)));
+            break;  
         default:
             ofLogError() << "Unknown creature type to spawn!";
             break;
@@ -425,3 +474,32 @@ std::vector<AquariumCreatureType> Level_2::Repopulate() {
     }
     return toRepopulate;
 }
+
+std::vector<AquariumCreatureType> Level_3::Repopulate() {
+    std::vector<AquariumCreatureType> toRepopulate;
+    for(std::shared_ptr<AquariumLevelPopulationNode> node : this->m_levelPopulation){
+        int delta = node->population - node->currentPopulation;
+        if(delta >0){
+            for(int i=0; i<delta; i++){
+                toRepopulate.push_back(node->creatureType);
+            }
+            node->currentPopulation += delta;
+        }
+    }
+    return toRepopulate;
+}
+
+std::vector<AquariumCreatureType> Level_4::Repopulate() {
+    std::vector<AquariumCreatureType> toRepopulate;
+    for(std::shared_ptr<AquariumLevelPopulationNode> node : this->m_levelPopulation){
+        int delta = node->population - node->currentPopulation;
+        if(delta >0){
+            for(int i=0; i<delta; i++){
+                toRepopulate.push_back(node->creatureType);
+            }
+            node->currentPopulation += delta;
+        }
+    }
+    return toRepopulate;
+}
+
