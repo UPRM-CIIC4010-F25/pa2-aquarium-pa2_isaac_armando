@@ -132,14 +132,30 @@ void BiggerFish::draw() const {
 }
 
 
+GreenFish::GreenFish(float x, float y, int speed, std::shared_ptr<GameSprite> sprite):
+NPCreature(x, y, speed, sprite) {
+    m_dx = (rand() % 3 - 1);
+    m_dy = (rand() % 3 - 1);
+    normalize();
+
+    setCollisionRadius(50); // Green fish will have a collision radius smaller than BiggerFish
+    m_value = 7; //  higher value than Bigger fish
+    m_creatureType = AquariumCreatureType::GreenFish;
+}
+void GreenFish::move(){}
+void GreenFish::draw() const {}
+
 // AquariumSpriteManager
 AquariumSpriteManager::AquariumSpriteManager(){
     this->m_npc_fish = std::make_shared<GameSprite>("base-fish.png", 70,70);
     this->m_big_fish = std::make_shared<GameSprite>("bigger-fish.png", 120, 120);
+    this->m_green_fish = std::make_shared<GameSprite>("cust_green_fish.png", 100, 100);
 }
 
 std::shared_ptr<GameSprite> AquariumSpriteManager::GetSprite(AquariumCreatureType t){
     switch(t){
+        case AquariumCreatureType::GreenFish:
+            return std::make_shared<GameSprite>(*this->m_green_fish);
         case AquariumCreatureType::BiggerFish:
             return std::make_shared<GameSprite>(*this->m_big_fish);
             
@@ -218,6 +234,9 @@ void Aquarium::SpawnCreature(AquariumCreatureType type) {
             break;
         case AquariumCreatureType::BiggerFish:
             this->addCreature(std::make_shared<BiggerFish>(x, y, speed, this->m_sprite_manager->GetSprite(AquariumCreatureType::BiggerFish)));
+            break;
+        case AquariumCreatureType::GreenFish:
+            this->addCreature(std::make_shared<GreenFish>(x, y, speed, this->m_sprite_manager->GetSprite(AquariumCreatureType::GreenFish)));
             break;
         default:
             ofLogError() << "Unknown creature type to spawn!";
