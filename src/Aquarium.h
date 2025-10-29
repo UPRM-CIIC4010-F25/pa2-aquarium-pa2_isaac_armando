@@ -10,8 +10,12 @@
 enum class AquariumCreatureType {
     NPCreature,
     BiggerFish,
+<<<<<<< HEAD
     GreenFish,
     TopFish
+=======
+    Bomb 
+>>>>>>> 507b9864cb13bd686c78c9c1d51d83c01cd6d950
 };
 
 string AquariumCreatureTypeToString(AquariumCreatureType t);
@@ -76,6 +80,14 @@ private:
     int m_power = 1; // mark current power lvl
     int m_damage_debounce = 0; // frames to wait after eating
 };
+class Bomb : public Creature {
+public:
+    Bomb(float x, float y, std::shared_ptr<GameSprite> sprite);
+
+     void move() override;
+     void draw() const override;
+     bool exploded = false;
+};
 
 class NPCreature : public Creature {
 public:
@@ -117,8 +129,12 @@ class AquariumSpriteManager {
     private:
         std::shared_ptr<GameSprite> m_npc_fish;
         std::shared_ptr<GameSprite> m_big_fish;
+<<<<<<< HEAD
         std::shared_ptr<GameSprite> m_green_fish;
         std::shared_ptr<GameSprite> m_top_fish;
+=======
+        std::shared_ptr<GameSprite> m_bomb;
+>>>>>>> 507b9864cb13bd686c78c9c1d51d83c01cd6d950
 };
 
 
@@ -135,12 +151,16 @@ public:
     void setMaxPopulation(int n) { m_maxPopulation = n; }
     void Repopulate();
     void SpawnCreature(AquariumCreatureType type);
+    void SpawnBomb();
+    int  KillFishes();
+    void removeBomb(std::shared_ptr<Creature> creature);
+
     
     std::shared_ptr<Creature> getCreatureAt(int index);
     int getCreatureCount() const { return m_creatures.size(); }
     int getWidth() const { return m_width; }
     int getHeight() const { return m_height; }
-
+    ofSoundPlayer bomb_sound;
 
 private:
     int m_maxPopulation = 0;

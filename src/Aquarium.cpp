@@ -135,6 +135,12 @@ void BiggerFish::draw() const {
     this->m_sprite->draw(this->m_x, this->m_y);
 }
 
+Bomb::Bomb(float x, float y, std::shared_ptr<GameSprite> sprite) : Creature(x,y,0.0,45.0,-1000,sprite){}
+void Bomb :: move(){}
+void Bomb :: draw () const {
+    if(m_sprite)
+    m_sprite->draw(m_x, m_y);
+} 
 
 GreenFish::GreenFish(float x, float y, int speed, std::shared_ptr<GameSprite> sprite):
 NPCreature(x, y, speed, sprite) {
@@ -192,8 +198,12 @@ void TopFish::draw() const {
 AquariumSpriteManager::AquariumSpriteManager(){
     this->m_npc_fish = std::make_shared<GameSprite>("base-fish.png", 70,70);
     this->m_big_fish = std::make_shared<GameSprite>("bigger-fish.png", 120, 120);
+<<<<<<< HEAD
     this->m_green_fish = std::make_shared<GameSprite>("cust_green_fish.png", 100, 100);
     this->m_top_fish = std::make_shared<GameSprite>("Top_fish.png", 120, 120);
+=======
+    this->m_bomb = std::make_shared<GameSprite>("bombs.png", 48, 45 );
+>>>>>>> 507b9864cb13bd686c78c9c1d51d83c01cd6d950
 }
 
 std::shared_ptr<GameSprite> AquariumSpriteManager::GetSprite(AquariumCreatureType t){
@@ -207,6 +217,8 @@ std::shared_ptr<GameSprite> AquariumSpriteManager::GetSprite(AquariumCreatureTyp
             
         case AquariumCreatureType::NPCreature:
             return std::make_shared<GameSprite>(*this->m_npc_fish);
+        case AquariumCreatureType::Bomb:
+            return std::make_shared<GameSprite>(*this->m_bomb);
         default:
             return nullptr;
     }
@@ -217,6 +229,8 @@ std::shared_ptr<GameSprite> AquariumSpriteManager::GetSprite(AquariumCreatureTyp
 Aquarium::Aquarium(int width, int height, std::shared_ptr<AquariumSpriteManager> spriteManager)
     : m_width(width), m_height(height) {
         m_sprite_manager =  spriteManager;
+        bomb_sound.load("bomb.mp3");
+        bomb_sound.setVolume(1.0f);
     }
 
 
@@ -235,6 +249,9 @@ void Aquarium::update() {
     for (auto& creature : m_creatures) {
         creature->move();
     }
+    if ((rand() % 1000) < 5) {
+    SpawnBomb();
+}
     this->Repopulate();
 }
 
@@ -256,6 +273,21 @@ void Aquarium::removeCreature(std::shared_ptr<Creature> creature) {
     }
 }
 
+void Aquarium::removeBomb(std::shared_ptr<Creature> creature) {
+    auto it = std::find(m_creatures.begin(), m_creatures.end(), creature);
+    if (it != m_creatures.end()) {
+        m_creatures.erase(it);
+    }
+}
+int Aquarium::KillFishes() {
+    int removed = 0;
+    for(int i = m_creatures.size() - 1; i >= 0 && removed < 3; i--){
+        if(m_creatures[i]->getValue() > 0){ 
+            removeCreature(m_creatures[i]);
+            removed++;
+        }
+    } return removed;
+}
 void Aquarium::clearCreatures() {
     m_creatures.clear();
 }
@@ -294,6 +326,11 @@ void Aquarium::SpawnCreature(AquariumCreatureType type) {
 
 }
 
+void Aquarium::SpawnBomb() {
+    float x = 30 + rand() % (m_width - 60);
+    float y = 30 + rand() % (m_height - 60);
+    this->addCreature(std::make_shared<Bomb>(x, y, this->m_sprite_manager->GetSprite(AquariumCreatureType::Bomb)));
+}
 
 // repopulation will be called from the levl class
 // it will compose into aquarium so eating eats frm the pool of NPCs in the lvl class
@@ -353,7 +390,16 @@ void AquariumGameScene::Update(){
             ofLogVerbose() << "Collision detected between player and NPC!" << std::endl;
             if(event->creatureB != nullptr){
                 event->print();
-                if(this->m_player->getPower() < event->creatureB->getValue()){
+                if(event->creatureB->getValue() < 0){
+                int killed = this->m_aquarium->KillFishes(); 
+                     if (killed > 0) {
+                      this->m_player->addToScore(killed, 1);
+                    }
+                this->m_aquarium->bomb_sound.play();
+                this->m_aquarium->removeBomb(event->creatureB);
+                return;
+                }
+                    else if(this->m_player->getPower() < event->creatureB->getValue()){
                     ofLogNotice() << "Player is too weak to eat the creature!" << std::endl;
                     this->m_player->loseLife(3*60); // 3 frames debounce, 3 seconds at 60fps
                     if(this->m_player->getLives() <= 0){
