@@ -10,12 +10,9 @@
 enum class AquariumCreatureType {
     NPCreature,
     BiggerFish,
-<<<<<<< HEAD
     GreenFish,
-    TopFish
-=======
+    TopFish,
     Bomb 
->>>>>>> 507b9864cb13bd686c78c9c1d51d83c01cd6d950
 };
 
 string AquariumCreatureTypeToString(AquariumCreatureType t);
@@ -129,12 +126,9 @@ class AquariumSpriteManager {
     private:
         std::shared_ptr<GameSprite> m_npc_fish;
         std::shared_ptr<GameSprite> m_big_fish;
-<<<<<<< HEAD
         std::shared_ptr<GameSprite> m_green_fish;
         std::shared_ptr<GameSprite> m_top_fish;
-=======
         std::shared_ptr<GameSprite> m_bomb;
->>>>>>> 507b9864cb13bd686c78c9c1d51d83c01cd6d950
 };
 
 

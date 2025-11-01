@@ -198,12 +198,9 @@ void TopFish::draw() const {
 AquariumSpriteManager::AquariumSpriteManager(){
     this->m_npc_fish = std::make_shared<GameSprite>("base-fish.png", 70,70);
     this->m_big_fish = std::make_shared<GameSprite>("bigger-fish.png", 120, 120);
-<<<<<<< HEAD
     this->m_green_fish = std::make_shared<GameSprite>("cust_green_fish.png", 100, 100);
     this->m_top_fish = std::make_shared<GameSprite>("Top_fish.png", 120, 120);
-=======
     this->m_bomb = std::make_shared<GameSprite>("bombs.png", 48, 45 );
->>>>>>> 507b9864cb13bd686c78c9c1d51d83c01cd6d950
 }
 
 std::shared_ptr<GameSprite> AquariumSpriteManager::GetSprite(AquariumCreatureType t){
