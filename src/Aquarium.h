@@ -8,6 +8,7 @@
 
 
 enum class AquariumCreatureType {
+    PlayerCreature,
     NPCreature,
     BiggerFish,
     GreenFish,
@@ -51,6 +52,7 @@ class PlayerCreature : public Creature {
 public:
 
     PlayerCreature(float x, float y, int speed, std::shared_ptr<GameSprite> sprite);
+    AquariumCreatureType GetType() {return AquariumCreatureType::PlayerCreature;}
     void move();
     void draw() const;
     void update();
@@ -69,11 +71,12 @@ public:
     void addToScore(int amount, int weight=1) { m_score += amount * weight; }
     void loseLife(int debounce);
     void increasePower(int value) { m_power += value; }
+    void increaselife(int value) {m_lives += value;}
     void reduceDamageDebounce();
     
 private:
     int m_score = 0;
-    int m_lives = 3;
+    int m_lives = 3;  
     int m_power = 1; // mark current power lvl
     int m_damage_debounce = 0; // frames to wait after eating
 };
@@ -124,6 +127,7 @@ class AquariumSpriteManager {
         ~AquariumSpriteManager() = default;
         std::shared_ptr<GameSprite>GetSprite(AquariumCreatureType t);
     private:
+        std::shared_ptr<GameSprite> m_player_fish;
         std::shared_ptr<GameSprite> m_npc_fish;
         std::shared_ptr<GameSprite> m_big_fish;
         std::shared_ptr<GameSprite> m_green_fish;
@@ -237,7 +241,7 @@ class Level_3 : public AquariumLevel  {
 class Level_4 : public AquariumLevel  {
     public:
         Level_4(int levelNumber, int targetScore): AquariumLevel(levelNumber, targetScore){
-            this->m_levelPopulation.push_back(std::make_shared<AquariumLevelPopulationNode>(AquariumCreatureType::BiggerFish, 15));
+            this->m_levelPopulation.push_back(std::make_shared<AquariumLevelPopulationNode>(AquariumCreatureType::BiggerFish, 10));
             this->m_levelPopulation.push_back(std::make_shared<AquariumLevelPopulationNode>(AquariumCreatureType::GreenFish, 10));
             this->m_levelPopulation.push_back(std::make_shared<AquariumLevelPopulationNode>(AquariumCreatureType::TopFish, 5));
 

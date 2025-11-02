@@ -12,6 +12,8 @@ string AquariumCreatureTypeToString(AquariumCreatureType t){
             return "BiggerFish";
         case AquariumCreatureType::NPCreature:
             return "BaseFish";
+        case AquariumCreatureType::PlayerCreature:
+            return "PlayerFish";
         default:
             return "UknownFish";
     }
@@ -149,7 +151,7 @@ NPCreature(x, y, speed, sprite) {
     normalize();
 
     setCollisionRadius(50); // Green fish will have a collision radius smaller than BiggerFish
-    m_value = 7; //  higher value than Bigger fish
+    m_value = 4; //  lower value than Bigger fish
     m_creatureType = AquariumCreatureType::GreenFish;
 }
 void GreenFish::move(){
@@ -176,7 +178,7 @@ NPCreature(x, y, speed, sprite) {
     normalize();
 
     setCollisionRadius(60); // Top fish will have a collision radius equal to BiggerFish
-    m_value = 10; // highest value
+    m_value = 8; // highest value
     m_creatureType = AquariumCreatureType::TopFish;
 }
 void TopFish::move(){
@@ -185,7 +187,10 @@ void TopFish::move(){
     if(m_dx < 0 ){
         this->m_sprite->setFlipped(true);
     }else {
-        this->m_sprite->setFlipped(false);
+        this->m_sprite->setFlipped(false);  
+        if(rand() % 3 == 0){                    //Randomly flips around
+            this->m_sprite->setFlipped(true);
+        }
     }
 
     bounce();}
@@ -196,6 +201,7 @@ void TopFish::draw() const {
 
 // AquariumSpriteManager
 AquariumSpriteManager::AquariumSpriteManager(){
+    this->m_player_fish = std::make_shared<GameSprite>("Gold_fish.png", 70,70);  //Changed the player's fish sprite
     this->m_npc_fish = std::make_shared<GameSprite>("base-fish.png", 70,70);
     this->m_big_fish = std::make_shared<GameSprite>("bigger-fish.png", 120, 120);
     this->m_green_fish = std::make_shared<GameSprite>("cust_green_fish.png", 100, 100);
@@ -214,6 +220,8 @@ std::shared_ptr<GameSprite> AquariumSpriteManager::GetSprite(AquariumCreatureTyp
             
         case AquariumCreatureType::NPCreature:
             return std::make_shared<GameSprite>(*this->m_npc_fish);
+        case AquariumCreatureType::PlayerCreature:
+            return std::make_shared<GameSprite>(*this->m_player_fish);
         case AquariumCreatureType::Bomb:
             return std::make_shared<GameSprite>(*this->m_bomb);
         default:
@@ -223,10 +231,10 @@ std::shared_ptr<GameSprite> AquariumSpriteManager::GetSprite(AquariumCreatureTyp
 
 
 // Aquarium Implementation
-Aquarium::Aquarium(int width, int height, std::shared_ptr<AquariumSpriteManager> spriteManager)
-    : m_width(width), m_height(height) {
+Aquarium::Aquarium(int width, int height, std::shared_ptr<AquariumSpriteManager> spriteManager) 
+    : m_width(width), m_height(height) { 
         m_sprite_manager =  spriteManager;
-        bomb_sound.load("bomb.mp3");
+        bomb_sound.load("bomb.mp3");                            //Bomb
         bomb_sound.setVolume(1.0f);
     }
 
@@ -407,9 +415,12 @@ void AquariumGameScene::Update(){
                 else{
                     this->m_aquarium->removeCreature(event->creatureB);
                     this->m_player->addToScore(1, event->creatureB->getValue());
-                    if (this->m_player->getScore() % 25 == 0){
+                    if (this->m_player->getScore() % 20 == 0){     //Increased the rate of power growth.
                         this->m_player->increasePower(1);
                         ofLogNotice() << "Player power increased to " << this->m_player->getPower() << "!" << std::endl;
+                    if(this->m_player->getPower() % 5 == 0){
+                        this->m_player->increaselife(1);              //Increases lives by 1 when the players score is a num divisible by 5.
+                    }   
                     }
                     
                 }
