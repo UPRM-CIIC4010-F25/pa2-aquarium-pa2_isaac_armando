@@ -4,6 +4,8 @@
 
 string AquariumCreatureTypeToString(AquariumCreatureType t){
     switch(t){
+        case AquariumCreatureType::PinkFish:
+            return "PinkFish";
         case AquariumCreatureType::TopFish:
             return "TopHatFish";
         case AquariumCreatureType::GreenFish:
@@ -178,7 +180,7 @@ NPCreature(x, y, speed, sprite) {
     normalize();
 
     setCollisionRadius(60); // Top fish will have a collision radius equal to BiggerFish
-    m_value = 8; // highest value
+    m_value = 8; // higher value
     m_creatureType = AquariumCreatureType::TopFish;
 }
 void TopFish::move(){
@@ -199,6 +201,33 @@ void TopFish::draw() const {
     this->m_sprite->draw(this->m_x, this->m_y);
 }
 
+PinkFish::PinkFish(float x, float y, int speed, std::shared_ptr<GameSprite> sprite):
+NPCreature(x, y, speed, sprite) {
+    m_dx = (rand() % 3 - 1);
+    m_dy = (rand() % 3 - 1);
+    normalize();
+
+    setCollisionRadius(40); // Pink fish will have a smaller collision radius
+    m_value = 12; // higher value
+    m_creatureType = AquariumCreatureType::PinkFish;
+}
+void PinkFish::move(){
+    m_x += m_dx * (m_speed * 1.5); // Moves at a bit faster speed than Green_fish
+    m_y += m_dy * (m_speed * 1.5);
+    if(m_dx < 0 ){
+        this->m_sprite->setFlipped(true);
+    }else {
+        this->m_sprite->setFlipped(false);
+    }
+
+    bounce();
+}
+
+void PinkFish::draw() const { 
+    ofLogVerbose() << "PinkFish at (" << m_x << ", " << m_y << ") with speed " << m_speed << std::endl;
+    this->m_sprite->draw(this->m_x, this->m_y);
+}
+
 // AquariumSpriteManager
 AquariumSpriteManager::AquariumSpriteManager(){
     this->m_player_fish = std::make_shared<GameSprite>("Gold_fish.png", 70,70);  //Changed the player's fish sprite
@@ -206,18 +235,20 @@ AquariumSpriteManager::AquariumSpriteManager(){
     this->m_big_fish = std::make_shared<GameSprite>("bigger-fish.png", 120, 120);
     this->m_green_fish = std::make_shared<GameSprite>("cust_green_fish.png", 100, 100);
     this->m_top_fish = std::make_shared<GameSprite>("Top_fish.png", 120, 120);
+    this->m_pink_fish = std::make_shared<GameSprite>("Pink_fish.png", 90, 90);
     this->m_bomb = std::make_shared<GameSprite>("bombs.png", 48, 45 );
 }
 
 std::shared_ptr<GameSprite> AquariumSpriteManager::GetSprite(AquariumCreatureType t){
     switch(t){
+        case AquariumCreatureType::PinkFish:
+            return std::make_shared<GameSprite>(*this->m_pink_fish);
         case AquariumCreatureType::TopFish:
             return std::make_shared<GameSprite>(*this->m_top_fish);
         case AquariumCreatureType::GreenFish:
             return std::make_shared<GameSprite>(*this->m_green_fish);
         case AquariumCreatureType::BiggerFish:
-            return std::make_shared<GameSprite>(*this->m_big_fish);
-            
+            return std::make_shared<GameSprite>(*this->m_big_fish);   
         case AquariumCreatureType::NPCreature:
             return std::make_shared<GameSprite>(*this->m_npc_fish);
         case AquariumCreatureType::PlayerCreature:
@@ -324,6 +355,9 @@ void Aquarium::SpawnCreature(AquariumCreatureType type) {
         case AquariumCreatureType::TopFish:
             this->addCreature(std::make_shared<TopFish>(x, y, speed, this->m_sprite_manager->GetSprite(AquariumCreatureType::TopFish)));
             break;  
+        case AquariumCreatureType::PinkFish:
+            this->addCreature(std::make_shared<PinkFish>(x, y, speed, this->m_sprite_manager->GetSprite(AquariumCreatureType::PinkFish)));
+            break;
         default:
             ofLogError() << "Unknown creature type to spawn!";
             break;

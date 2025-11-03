@@ -43,7 +43,11 @@ void ofApp::setup(){
     myAquarium->addAquariumLevel(std::make_shared<Level_1>(1, 15));
     myAquarium->addAquariumLevel(std::make_shared<Level_2>(2, 20));
     myAquarium->addAquariumLevel(std::make_shared<Level_3>(3, 25));
-    myAquarium->addAquariumLevel(std::make_shared<Level_4>(4, 30));
+    myAquarium->addAquariumLevel(std::make_shared<Level_4>(4, 45));
+    myAquarium->addAquariumLevel(std::make_shared<Level_5>(5, 70)); 
+    myAquarium->addAquariumLevel(std::make_shared<Level_6>(6, 100)); 
+    myAquarium->addAquariumLevel(std::make_shared<Level_7>(7, 140)); 
+
     myAquarium->Repopulate(); // initial population
 
     // now that we are mostly set, lets pass the player and the aquarium downstream
@@ -76,6 +80,13 @@ void ofApp::update(){
         auto gameScene = std::static_pointer_cast<AquariumGameScene>(gameManager->GetActiveScene());
         if(gameScene->GetLastEvent() != nullptr && gameScene->GetLastEvent()->isGameOver()){
             gameManager->Transition(GameSceneKindToString(GameSceneKind::GAME_OVER));
+            music.setLoop(false);
+            music.stop();
+            if (!music.load("Game Over.mp3")) {                   //Game Over Music implementation
+        ofLogError() << "Failed to load Game Over.mp3!"; 
+    } else {
+        music.play();
+        } 
             return;
         }
         
