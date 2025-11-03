@@ -478,9 +478,11 @@ void AquariumGameScene::Update(){
                     if (currentScore / 20 > this->m_player->m_last_power) {
                         this->m_player->m_last_power = currentScore / 20;
                         this->m_player->increasePower(1);
+                        ofLogNotice() << "Player power increased to " << this->m_player->getPower() << "!" << std::endl;
                         
                         if (this->m_player->getPower() % 5 == 0) {
                             this->m_player->increaselife(1);
+                            ofLogNotice() << "Player life increased to " << this->m_player->getLives() << "!" << std::endl;
                         }
                     }
                     if (this->m_player->getPower() % 4 == 0) {
