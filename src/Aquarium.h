@@ -13,7 +13,8 @@ enum class AquariumCreatureType {
     BiggerFish,
     GreenFish,
     TopFish,
-    Bomb 
+    Bomb,
+    Seaweed
 };
 
 string AquariumCreatureTypeToString(AquariumCreatureType t);
@@ -71,7 +72,11 @@ public:
     void addToScore(int amount, int weight=1) { m_score += amount * weight; }
     void loseLife(int debounce);
     void increasePower(int value) { m_power += value; }
-    void increaselife(int value) {m_lives += value;}
+    void increaselife(int value) {
+    m_lives += value;
+    if (m_lives > 5) 
+    m_lives = 5;
+}
     void reduceDamageDebounce();
     int m_last_power = 0;
     
@@ -89,6 +94,13 @@ public:
      void draw() const override;
      bool exploded = false;
 };
+ class Seaweed: public Creature {
+    public:
+    Seaweed(float x, float y, std::shared_ptr<GameSprite> sprite);
+    void move() override;
+    void draw() const override;
+ };
+
 
 class NPCreature : public Creature {
 public:
@@ -134,6 +146,7 @@ class AquariumSpriteManager {
         std::shared_ptr<GameSprite> m_green_fish;
         std::shared_ptr<GameSprite> m_top_fish;
         std::shared_ptr<GameSprite> m_bomb;
+        std::shared_ptr<GameSprite> m_seaweed;
 };
 
 
@@ -153,6 +166,7 @@ public:
     void SpawnBomb();
     int  KillFishes();
     void removeBomb(std::shared_ptr<Creature> creature);
+    void SpawnSeaweed();
 
     
     std::shared_ptr<Creature> getCreatureAt(int index);
@@ -160,6 +174,7 @@ public:
     int getWidth() const { return m_width; }
     int getHeight() const { return m_height; }
     ofSoundPlayer bomb_sound;
+    ofSoundPlayer seaweed_sound;
 
 private:
     int m_maxPopulation = 0;
