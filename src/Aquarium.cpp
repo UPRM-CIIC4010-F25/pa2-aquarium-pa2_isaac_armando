@@ -146,6 +146,14 @@ void Bomb :: draw () const {
     m_sprite->draw(m_x, m_y);
 } 
 
+Seaweed::Seaweed(float x, float y, std::shared_ptr<GameSprite> sprite) : Creature(x, y, 0.0, 45.0, 2000, sprite) {}  
+void Seaweed :: draw () const {
+    if(m_sprite)
+    m_sprite->draw(m_x, m_y);
+} 
+void Seaweed :: move(){}
+
+
 GreenFish::GreenFish(float x, float y, int speed, std::shared_ptr<GameSprite> sprite):
 NPCreature(x, y, speed, sprite) {
     m_dx = (rand() % 3 - 1);
@@ -237,6 +245,7 @@ AquariumSpriteManager::AquariumSpriteManager(){
     this->m_top_fish = std::make_shared<GameSprite>("Top_fish.png", 120, 120);
     this->m_pink_fish = std::make_shared<GameSprite>("Pink_fish.png", 90, 90);
     this->m_bomb = std::make_shared<GameSprite>("bombs.png", 48, 45 );
+    this->m_seaweed = std::make_shared<GameSprite>("seaweed.png", 72, 72 );
 }
 
 std::shared_ptr<GameSprite> AquariumSpriteManager::GetSprite(AquariumCreatureType t){
@@ -255,6 +264,8 @@ std::shared_ptr<GameSprite> AquariumSpriteManager::GetSprite(AquariumCreatureTyp
             return std::make_shared<GameSprite>(*this->m_player_fish);
         case AquariumCreatureType::Bomb:
             return std::make_shared<GameSprite>(*this->m_bomb);
+                case AquariumCreatureType::Seaweed:
+            return std::make_shared<GameSprite>(*this->m_seaweed);
         default:
             return nullptr;
     }
@@ -267,6 +278,8 @@ Aquarium::Aquarium(int width, int height, std::shared_ptr<AquariumSpriteManager>
         m_sprite_manager =  spriteManager;
         bomb_sound.load("bomb.mp3");                            //Bomb
         bomb_sound.setVolume(1.0f);
+        seaweed_sound.load("Live_sound.mp3");                   //Seaweed        
+        seaweed_sound.setVolume(1.0f);
     }
 
 
@@ -371,6 +384,12 @@ void Aquarium::SpawnBomb() {
     this->addCreature(std::make_shared<Bomb>(x, y, this->m_sprite_manager->GetSprite(AquariumCreatureType::Bomb)));
 }
 
+void Aquarium ::SpawnSeaweed(){
+    float x = 30 + rand() % (m_width - 60);
+    float y = m_height - 240;
+    this->addCreature(std::make_shared<Seaweed>(x, y, this->m_sprite_manager->GetSprite(AquariumCreatureType::Seaweed)));
+}
+
 // repopulation will be called from the levl class
 // it will compose into aquarium so eating eats frm the pool of NPCs in the lvl class
 // once lvl criteria met, we move to new lvl through inner signal asking for new lvl
@@ -438,6 +457,12 @@ void AquariumGameScene::Update(){
                 this->m_aquarium->removeBomb(event->creatureB);
                 return;
                 }
+                else if (event->creatureB->getValue() == 2000) {
+                    this->m_player->increaselife(1);
+                    this->m_aquarium->seaweed_sound.play();
+                    this->m_aquarium->removeCreature(event->creatureB);
+                }
+
                     else if(this->m_player->getPower() < event->creatureB->getValue()){
                     ofLogNotice() << "Player is too weak to eat the creature!" << std::endl;
                     this->m_player->loseLife(3*60); // 3 frames debounce, 3 seconds at 60fps
@@ -457,6 +482,13 @@ void AquariumGameScene::Update(){
                         if (this->m_player->getPower() % 5 == 0) {
                             this->m_player->increaselife(1);
                         }
+                    }
+                    if (this->m_player->getPower() % 4 == 0) {
+                    static int lastSeaweedPower = -1;
+                    if (lastSeaweedPower != this->m_player->getPower()) {
+                     this->m_aquarium->SpawnSeaweed();
+                     lastSeaweedPower = this->m_player->getPower();
+                       }
                     }
                 }
                 
