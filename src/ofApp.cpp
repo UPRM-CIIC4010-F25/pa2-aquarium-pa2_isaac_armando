@@ -47,6 +47,7 @@ void ofApp::setup(){
     myAquarium->addAquariumLevel(std::make_shared<Level_5>(5, 70)); 
     myAquarium->addAquariumLevel(std::make_shared<Level_6>(6, 100)); 
     myAquarium->addAquariumLevel(std::make_shared<Level_7>(7, 140)); 
+    myAquarium->addAquariumLevel(std::make_shared<Level_8>(8, 300));
 
     myAquarium->Repopulate(); // initial population
 
