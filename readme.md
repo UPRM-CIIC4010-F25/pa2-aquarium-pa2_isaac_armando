@@ -37,4 +37,9 @@ If a partner has no commits in the repositories, they will receive a 0.
 
 # Student Notes
 If you have any bonus specs, bonus or any details the TA's should know, you should include it here:
-Changed the player's sprite and added Game_over music.
+
+Changed the player's sprite to make it more clear who the player is.
+Added Game_over music.
+Added a monster to the final level which is inherited from NPCCreature. The main goal is not to eat it but to avoid it, as it is far more powerful than any of the other creatures.
+The Green_fish can be eaten before the Bigger_fish.
+The seaweed will not only give you an extra life, but also some more points.
