@@ -4,6 +4,8 @@
 
 string AquariumCreatureTypeToString(AquariumCreatureType t){
     switch(t){
+        case AquariumCreatureType::MonsterCreature:
+            return "MonsterCreature";
         case AquariumCreatureType::PinkFish:
             return "PinkFish";
         case AquariumCreatureType::TopFish:
@@ -146,7 +148,7 @@ void Bomb :: draw () const {
     m_sprite->draw(m_x, m_y);
 } 
 
-Seaweed::Seaweed(float x, float y, std::shared_ptr<GameSprite> sprite) : Creature(x, y, 0.0, 45.0, 2000, sprite) {}  
+Seaweed::Seaweed(float x, float y, std::shared_ptr<GameSprite> sprite) : Creature(x, y, 0.0, 45.0, 100, sprite) {}  
 void Seaweed :: draw () const {
     if(m_sprite)
     m_sprite->draw(m_x, m_y);
@@ -215,8 +217,8 @@ NPCreature(x, y, speed, sprite) {
     m_dy = (rand() % 3 - 1);
     normalize();
 
-    setCollisionRadius(40); // Pink fish will have a smaller collision radius
-    m_value = 12; // higher value
+    setCollisionRadius(50); // Pink fish will have a smaller collision radius
+    m_value = 14; // higher value
     m_creatureType = AquariumCreatureType::PinkFish;
 }
 void PinkFish::move(){
@@ -236,6 +238,32 @@ void PinkFish::draw() const {
     this->m_sprite->draw(this->m_x, this->m_y);
 }
 
+MonsterCreature::MonsterCreature(float x, float y, int speed, std::shared_ptr<GameSprite> sprite):NPCreature(x, y, speed, sprite) {
+    m_dx = (rand() % 3 - 1);
+    m_dy = (rand() % 3 - 1);
+    normalize();
+
+    setCollisionRadius(100); // MonsterCreature will have the largest collision radius
+    m_value = 300; // highest value
+    m_creatureType = AquariumCreatureType::MonsterCreature;
+}
+void MonsterCreature::move(){
+    m_x += m_dx * (m_speed * 1.3); // Moves at slightly faster speed
+    m_y += m_dy * (m_speed * 1.3);
+    if(m_dx < 0 ){
+        this->m_sprite->setFlipped(true);
+    }else {
+        this->m_sprite->setFlipped(false);
+    }
+
+    bounce();
+}
+void MonsterCreature::draw() const { 
+    ofLogVerbose() << "MonsterCreature at (" << m_x << ", " << m_y << ") with speed " << m_speed << std::endl;
+    this->m_sprite->draw(this->m_x, this->m_y);
+}
+
+
 // AquariumSpriteManager
 AquariumSpriteManager::AquariumSpriteManager(){
     this->m_player_fish = std::make_shared<GameSprite>("Gold_fish.png", 70,70);  //Changed the player's fish sprite
@@ -244,12 +272,15 @@ AquariumSpriteManager::AquariumSpriteManager(){
     this->m_green_fish = std::make_shared<GameSprite>("cust_green_fish.png", 100, 100);
     this->m_top_fish = std::make_shared<GameSprite>("Top_fish.png", 120, 120);
     this->m_pink_fish = std::make_shared<GameSprite>("Pink_fish.png", 90, 90);
+    this->m_monster_creature = std::make_shared<GameSprite>("Pix_Mons.png", 470, 470);
     this->m_bomb = std::make_shared<GameSprite>("bombs.png", 48, 45 );
     this->m_seaweed = std::make_shared<GameSprite>("seaweed.png", 72, 72 );
 }
 
 std::shared_ptr<GameSprite> AquariumSpriteManager::GetSprite(AquariumCreatureType t){
     switch(t){
+        case AquariumCreatureType::MonsterCreature:
+            return std::make_shared<GameSprite>(*this->m_monster_creature);
         case AquariumCreatureType::PinkFish:
             return std::make_shared<GameSprite>(*this->m_pink_fish);
         case AquariumCreatureType::TopFish:
@@ -371,6 +402,9 @@ void Aquarium::SpawnCreature(AquariumCreatureType type) {
         case AquariumCreatureType::PinkFish:
             this->addCreature(std::make_shared<PinkFish>(x, y, speed, this->m_sprite_manager->GetSprite(AquariumCreatureType::PinkFish)));
             break;
+        case AquariumCreatureType::MonsterCreature:
+            this->addCreature(std::make_shared<MonsterCreature>(x, y, speed, this->m_sprite_manager->GetSprite(AquariumCreatureType::MonsterCreature)));
+            break;
         default:
             ofLogError() << "Unknown creature type to spawn!";
             break;
@@ -457,7 +491,7 @@ void AquariumGameScene::Update(){
                 this->m_aquarium->removeBomb(event->creatureB);
                 return;
                 }
-                else if (event->creatureB->getValue() == 2000) {
+                else if (event->creatureB->getValue() == 100) {
                     this->m_player->increaselife(1);
                     this->m_aquarium->seaweed_sound.play();
                     this->m_aquarium->removeCreature(event->creatureB);

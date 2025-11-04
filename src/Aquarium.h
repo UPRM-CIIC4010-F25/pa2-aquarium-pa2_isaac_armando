@@ -14,6 +14,7 @@ enum class AquariumCreatureType {
     GreenFish,
     TopFish,
     PinkFish,
+    MonsterCreature,
     Bomb,
     Seaweed
 };
@@ -148,6 +149,13 @@ public:
     void draw() const override;
 };
 
+class MonsterCreature : public NPCreature {
+public:
+    MonsterCreature(float x, float y, int speed, std::shared_ptr<GameSprite> sprite);
+    void move() override;
+    void draw() const override;
+};
+
 class AquariumSpriteManager {
     public:
         AquariumSpriteManager();
@@ -160,6 +168,7 @@ class AquariumSpriteManager {
         std::shared_ptr<GameSprite> m_green_fish;
         std::shared_ptr<GameSprite> m_top_fish;
         std::shared_ptr<GameSprite> m_pink_fish;
+        std::shared_ptr<GameSprite> m_monster_creature;
         std::shared_ptr<GameSprite> m_bomb;
         std::shared_ptr<GameSprite> m_seaweed;
 };
@@ -308,3 +317,17 @@ class Level_7 : public AquariumLevel  {
         };
 
 };
+
+class Level_8 : public AquariumLevel  {
+    public:
+        Level_8(int levelNumber, int targetScore): AquariumLevel(levelNumber, targetScore){
+            this->m_levelPopulation.push_back(std::make_shared<AquariumLevelPopulationNode>(AquariumCreatureType::MonsterCreature, 1));
+            this->m_levelPopulation.push_back(std::make_shared<AquariumLevelPopulationNode>(AquariumCreatureType::PinkFish, 2));
+            this->m_levelPopulation.push_back(std::make_shared<AquariumLevelPopulationNode>(AquariumCreatureType::TopFish, 3));
+            this->m_levelPopulation.push_back(std::make_shared<AquariumLevelPopulationNode>(AquariumCreatureType::GreenFish, 5));
+            this->m_levelPopulation.push_back(std::make_shared<AquariumLevelPopulationNode>(AquariumCreatureType::BiggerFish, 4));
+            this->m_levelPopulation.push_back(std::make_shared<AquariumLevelPopulationNode>(AquariumCreatureType::NPCreature, 6));
+
+        };
+
+};  //Final Level
