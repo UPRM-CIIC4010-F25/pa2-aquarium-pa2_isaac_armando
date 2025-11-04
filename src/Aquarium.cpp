@@ -524,6 +524,22 @@ void AquariumGameScene::paintAquariumHUD(){
     }
     ofSetColor(ofColor::white); // Reset color to white for other drawings
 }
+std::vector<AquariumCreatureType> PopulationManager::CalculateRepopulation(   // Implementation of de repopulation logic, the other repetitive lines are no longer in the code
+    std::vector<std::shared_ptr<AquariumLevelPopulationNode>>& population_Nodes
+) {
+    std::vector<AquariumCreatureType> toRepopulate;
+    for (std::shared_ptr<AquariumLevelPopulationNode> node : population_Nodes) {
+        int delta = node->population - node->currentPopulation;
+        ofLogVerbose() << "to Repopulate : " << delta << endl;
+        if (delta > 0) {
+            for (int i = 0; i < delta; i++) {
+                toRepopulate.push_back(node->creatureType);
+              }
+            node->currentPopulation += delta;
+     }
+ }
+    return toRepopulate;
+   }
 
 void AquariumLevel::populationReset(){
     for(auto node: this->m_levelPopulation){
@@ -552,18 +568,7 @@ bool AquariumLevel::isCompleted(){
 }
 
 std::vector<AquariumCreatureType> AquariumLevel::Repopulate() {
-    std::vector<AquariumCreatureType> toRepopulate;
-    for(std::shared_ptr<AquariumLevelPopulationNode> node : this->m_levelPopulation){
-        int delta = node->population - node->currentPopulation;
-        ofLogVerbose() << "to Repopulate :  " << delta << endl;
-        if(delta >0){
-            for(int i = 0; i<delta; i++){
-                toRepopulate.push_back(node->creatureType);
-            }
-            node->currentPopulation += delta;
-        }
-    }
-    return toRepopulate;
+    return PopulationManager::CalculateRepopulation(this->m_levelPopulation);
 }
 
 

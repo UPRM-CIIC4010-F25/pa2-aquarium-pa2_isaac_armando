@@ -32,7 +32,13 @@ class AquariumLevelPopulationNode{
         int population;
         int currentPopulation;
 };
-
+ 
+class PopulationManager { // Modular class to repopulate
+public:
+    static std::vector<AquariumCreatureType> CalculateRepopulation(
+        std::vector<std::shared_ptr<AquariumLevelPopulationNode>>& population_Nodes
+    );
+};
 class AquariumLevel : public GameLevel {
     public:
         AquariumLevel(int levelNumber, int targetScore)
