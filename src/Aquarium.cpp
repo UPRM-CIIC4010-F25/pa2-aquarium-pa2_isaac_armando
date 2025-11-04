@@ -414,7 +414,7 @@ void Aquarium::SpawnCreature(AquariumCreatureType type) {
 
 void Aquarium::SpawnBomb() {
     float x = 30 + rand() % (m_width - 60);
-    float y = 30 + rand() % (m_height - 60);
+    float y = 10 + rand() % (m_height - 60);
     this->addCreature(std::make_shared<Bomb>(x, y, this->m_sprite_manager->GetSprite(AquariumCreatureType::Bomb)));
 }
 
